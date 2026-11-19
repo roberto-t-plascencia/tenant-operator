@@ -1,0 +1,14 @@
+apiVersion: tenancy.plascencia.dev/v1alpha1
+kind: Tenant
+metadata:
+  name: acme
+spec:
+  displayName: Acme Corp
+  owners:
+  - alice@acme.io
+  - bob@acme.io
+  isolation: Strict
+  quota:
+    cpu: "4"
+    memory: 8Gi
+    pods: 50

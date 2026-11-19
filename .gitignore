@@ -1,0 +1,7 @@
+bin/
+cover.out
+go.work
+go.work.sum
+*.test
+.idea/
+.vscode/

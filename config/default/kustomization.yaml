@@ -1,0 +1,6 @@
+namespace: tenant-operator-system
+namePrefix: tenant-operator-
+resources:
+- ../crd
+- ../rbac
+- ../manager

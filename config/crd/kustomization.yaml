@@ -1,0 +1,2 @@
+resources:
+- bases/tenancy.plascencia.dev_tenants.yaml

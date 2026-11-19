@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint, generate, unit test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # lets pushes to main sync go.sum and generated files
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Tidy modules and regenerate code, CRD and RBAC
+        run: |
+          go mod tidy
+          make generate manifests
+
+      - name: Check generated files are committed
+        id: drift
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fail pull requests with stale generated files
+        if: steps.drift.outputs.changed == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "Run 'go mod tidy && make generate manifests' and commit the result."
+          git diff
+          exit 1
+
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: Unit tests
+        run: go test -race -coverprofile cover.out ./... && go tool cover -func cover.out | tail -1
+
+      - name: Build
+        run: go build -o bin/manager ./cmd
+
+      - name: Commit synced files on main
+        if: steps.drift.outputs.changed == 'true' && github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: sync go.sum and generated files"
+          git push
+
+  e2e:
+    name: End-to-end on kind
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # pick up the synced commit if the test job pushed one
+          ref: ${{ github.event_name == 'push' && github.ref || '' }}
+
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: kind
+
+      - name: Run e2e
+        run: ./test/e2e/run.sh

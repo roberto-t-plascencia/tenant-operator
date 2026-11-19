@@ -1,0 +1,6 @@
+resources:
+- manager.yaml
+images:
+- name: controller
+  newName: ghcr.io/roberto-t-plascencia/tenant-operator
+  newTag: latest

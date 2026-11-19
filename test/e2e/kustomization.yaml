@@ -1,0 +1,6 @@
+# Deploys the operator with the locally built e2e image.
+resources:
+- ../../config/default
+images:
+- name: ghcr.io/roberto-t-plascencia/tenant-operator
+  newTag: e2e

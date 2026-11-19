@@ -58,8 +58,7 @@ spec:
                 type: string
               isolation:
                 default: Strict
-                description: Isolation controls network isolation for the tenant
-                  namespace.
+                description: Isolation controls network isolation for the tenant namespace.
                 enum:
                 - Strict
                 - None
@@ -79,8 +78,7 @@ spec:
                     anyOf:
                     - type: integer
                     - type: string
-                    description: CPU caps the sum of CPU requests in the tenant
-                      namespace.
+                    description: CPU caps the sum of CPU requests in the tenant namespace.
                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                     x-kubernetes-int-or-string: true
                   memory:
@@ -102,11 +100,10 @@ spec:
             description: TenantStatus is the observed state of a Tenant.
             properties:
               conditions:
-                description: Conditions describe the tenant's current state in
-                  detail.
+                description: Conditions describe the tenant's current state in detail.
                 items:
-                  description: Condition contains details for one aspect of the
-                    current state of this API Resource.
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
                   properties:
                     lastTransitionTime:
                       description: |-
@@ -140,8 +137,7 @@ spec:
                       pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
                       type: string
                     status:
-                      description: status of the condition, one of True, False,
-                        Unknown.
+                      description: status of the condition, one of True, False, Unknown.
                       enum:
                       - "True"
                       - "False"
@@ -179,8 +175,8 @@ spec:
         x-kubernetes-validations:
         - message: name must be a DNS label of at most 56 characters so the tenant-
             namespace name stays valid
-          rule: self.metadata.name.matches('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$') &&
-            size(self.metadata.name) <= 56
+          rule: self.metadata.name.matches('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$') && size(self.metadata.name)
+            <= 56
     served: true
     storage: true
     subresources:
